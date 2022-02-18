@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- jQuery Library-->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.1/css/bootstrap.min.css"
+      integrity="sha512-T584yQ/tdRR5QwOpfvDfVQUidzfgc2339Lc8uBDtcp/wYu80d7jwBgAxbyMh0a9YM9F8N3tdErpFI8iaGx6x5g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Socket Library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Chat App</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-8 offset-2">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="text-center">Chattr App</h4>
+            </div>
+            <div class="card-body">
+              <form>
+                <!-- textarea - to display messages -->
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-12">
+                      <textarea
+                        readonly
+                        name="taMsg"
+                        id="taMsg"
+                        class="form-control"
+                        rows="10"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+                <!-- input box and button -->
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-8">
+                      <input
+                        type="text"
+                        name="txtMsg"
+                        id="txtMsg"
+                        class="form-control"
+                      />
+                    </div>
+                    <div class="col-4">
+                      <button type="button" id="btnSend" class="btn btn-success btn-block">
+                        Send
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        $(document).ready(() => {
+            const socket = io.connect("/");
+            const chatterName = prompt("Please enter you name");
+
+            socket.on("acknowledge", (data) => {
+              console.log(data);
+            });
+            $("#btnSend").on("click", (event)=>{
+                event.preventDefault();
+                const message = $("#txtMsg").val();
+                socket.emit("MsgToServer", chatterName, message);
+                $("#txtMsg").val('');
+            })
+            socket.on("MsgToClient", (chatterName, message) =>{
+                $("#taMsg").append(chatterName + " : " + message + "\n")
+            })
+        })
+    </script>
+  </body>
+</html>
